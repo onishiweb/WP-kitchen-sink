@@ -3,13 +3,11 @@
  * The template for displaying all pages.
  *
  *
- * @package WordPress
- * @subpackage One Ltd
+ * @package One_starter
+ * @since One_starter 1.1
  */
 get_header(); ?>			
 			
-			<?php get_sidebar(); ?>
-						
 			<?php if ( have_posts() ) : ?>
 				<?php /* Start the Loop */ ?>
 				<?php while ( have_posts() ) : the_post(); ?>
@@ -27,5 +25,5 @@ get_header(); ?>
 				<p><?php _e( 'Error message: no posts found...', 'oneltd' ); ?></p>
 			<?php endif; ?>
 			
-			
+	<?php get_sidebar(); ?>			
 <?php get_footer(); ?>

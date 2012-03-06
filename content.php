@@ -1,3 +1,10 @@
+<?php
+/**
+ * @package One_starter
+ * @since One_starter 1.1
+ */
+?>
+			
 			<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 			
 				<header>

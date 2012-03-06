@@ -1,4 +1,13 @@
-<!DOCTYPE html> <!-- Lovely HTML5 doctype -->
+<?php
+/**
+ * The Header for our theme.
+ *
+ * Displays all of the <head> section and everything up till <div id="main">
+ *
+ * @package One_starter
+ * @since One_starter 1.1
+ */
+?><!DOCTYPE html> <!-- Lovely HTML5 doctype -->
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ --> 
 <!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
 <!--[if IE 7 ]>    <html lang="en" class="no-js ie7"> <![endif]-->
@@ -32,6 +41,12 @@
 	
 		?></title>
 		
+		<!-- HTML5 SHIV for IE -->
+		<!-- If using Modernizr you can remove this script! -->
+		<!--[if lt IE 9]>
+			<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		
 		<!-- Main stylesheets & fonts etc -->
 		<!--[if ! lte IE 6]><!-->
 			<link rel="stylesheet" type="text/css" media="all" href="<?php bloginfo( 'stylesheet_url' ); ?>" />			
@@ -47,6 +62,19 @@
 		<!-- JS Plugins (please check and update often) -->		
 		
 		<!-- insert analytics here -->
+		<script type="text/javascript">
+		/*
+		  var _gaq = _gaq || [];
+		  _gaq.push(['_setAccount', 'UA-XXXXXXXX-X']);
+		  _gaq.push(['_trackPageview']);
+		
+		  (function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		  })();
+		*/
+		</script>
 	</head>
 	
 	<body <?php body_class(); ?>>
@@ -56,12 +84,15 @@
 		
 			<!-- Main site header -->
 			<header id="site-header">
-				<h1><a href="<?php echo home_url( '/' ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></h2>
+				<hgroup>
+					<h1 class="site-title"><a href="<?php echo home_url( '/' ); ?>" title="<?php echo esc_attr( get_bloginfo( 'name', 'display' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></h1>
+					<h2 class="site-description"><?php bloginfo( 'description' ); ?></h2>
+				</hgroup>
 			</header>
 			
 			<!-- Main site navigation -->
 			<nav id="main-navigation">
-				
+				<?php wp_nav_menu( array( 'theme_location' => 'primary' ) ); ?>
 			</nav>
 			
 			<!-- Begin content area -->

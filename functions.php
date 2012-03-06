@@ -1,4 +1,10 @@
 <?php
+/**
+ * One_starter functions and definitions
+ *
+ * @package One_starter
+ * @since One_starter 1.1
+ */
 
 if ( ! function_exists( 'oneltd_setup' ) ):
 
@@ -12,6 +18,17 @@ if ( ! function_exists( 'oneltd_setup' ) ):
 	function oneltd_setup() {
 
 		/**
+		 * Custom template tags for this theme.
+		 */
+		require( get_template_directory() . '/inc/template-tags.php' );
+	
+		/**
+		 * Custom Theme Options (to appear in wordpress backend if needed)
+		 */
+		// require( get_template_directory() . '/inc/theme-options.php' );
+
+
+		/**
 		 * Theme supports: Feed links in head, post formats (aside/image/gallery), post thumbnails...
 		 */
 		add_theme_support( 'automatic-feed-links' );
@@ -22,7 +39,7 @@ if ( ! function_exists( 'oneltd_setup' ) ):
 		 * This theme uses wp_nav_menu() in one location.
 		 */
 		register_nav_menus( array(
-			'main-navigation' => __( 'Main Navigation', 'oneltd' ),
+			'primary' => __( 'Main Navigation', 'oneltd' ),
 		) );
 		
 		/**
@@ -39,29 +56,19 @@ if ( ! function_exists( 'oneltd_setup' ) ):
 	
 	
 		/**
-		 * New excerpt length and after excerpt stuff!
-		 */
+		 * New excerpt length and custom after excerpt!
+		
 		function new_excerpt_length($length) {
 			return 60;
 		}
 		add_filter('excerpt_length', 'new_excerpt_length');
-		
 		// ... after excerpt
 		function custom_excerpt_more( $more ) {
 			return '...';
 		}
 		add_filter( 'excerpt_more', 'custom_excerpt_more' );
-		
-	
-		/**
-		 * Better jQuery inclusion
 		 */
-		if (!is_admin()) {
-			wp_deregister_script('jquery');
-			wp_register_script('jquery', ("http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"), false);
-			wp_enqueue_script('jquery');
-		}
-		
+			
 		/**
 		 * Remove the crap from the wp_head() function
 		 */
@@ -75,6 +82,7 @@ if ( ! function_exists( 'oneltd_setup' ) ):
 		remove_action('wp_head', 'parent_post_rel_link', 10, 0);
 		remove_action('wp_head', 'adjacent_posts_rel_link', 10, 0);
 	
+		
 		/** WP in the back-end **/
 		
 		/**
@@ -99,15 +107,15 @@ if ( ! function_exists( 'oneltd_setup' ) ):
 		 */
 		function disable_default_dashboard_widgets() {  
 		  
-			remove_meta_box('dashboard_right_now', 'dashboard', 'core');  
+			// remove_meta_box('dashboard_right_now', 'dashboard', 'core');  
 			remove_meta_box('dashboard_recent_comments', 'dashboard', 'core');  
 			remove_meta_box('dashboard_incoming_links', 'dashboard', 'core');  
 			remove_meta_box('dashboard_plugins', 'dashboard', 'core');
 			// AO: This one could be useful though...
 			// remove_meta_box('dashboard_quick_press', 'dashboard', 'core'); 
-			remove_meta_box('dashboard_recent_drafts', 'dashboard', 'core');  
-			remove_meta_box('dashboard_primary', 'dashboard', 'core');  
-			remove_meta_box('dashboard_secondary', 'dashboard', 'core');  
+			// remove_meta_box('dashboard_recent_drafts', 'dashboard', 'core');  
+			// remove_meta_box('dashboard_primary', 'dashboard', 'core');  
+			// remove_meta_box('dashboard_secondary', 'dashboard', 'core');  
 		}  
 		add_action('admin_menu', 'disable_default_dashboard_widgets');
 		
@@ -119,10 +127,11 @@ if ( ! function_exists( 'oneltd_setup' ) ):
 			add_filter('pre_option_update_core', create_function('$a', "return null;"));
 		}
 		
+		// AO: Add in the function to stop users from using the Rich text editor in posts/pages.... (and comment it out...)
+		
 	}
 
 endif; // oneltd_setup
-
 /**
  * Tell WordPress to run toolbox_setup() when the 'after_setup_theme' hook is run.
  */
@@ -130,64 +139,25 @@ add_action( 'after_setup_theme', 'oneltd_setup' );
 
 
 /*
- * AO: Subnav function which will aim to find the highest parent and provide a subnav from that
- * or can be passed a nav menu name and it will display that... (With containing UL)
+ * AO: Is template - check whether the current page is using a certain template or retreive the template name
  *
  */
-function get_subnav($nav_menu = "") 
-{
-
-	if($nav_menu == "")
-	{
-		$ancestors = get_post_ancestors( $post ); 
-		$top = get_post(end($ancestors), "OBJECT");
-		
-		echo "<ul>";
-		wp_list_pages('title_li=&link_before=<span></span>&child_of='.$top->ID);
-		if( $top->ID == 4116 ):
-		?><li><a href="/contact-us"><span></span>Contact us</a></li>
-		<?php
-		endif;
-		echo "</ul>";
-	}
-	else
-	{
-		//get the nav menu based on the nav menu name received!
-		wp_nav_menu("menu=".$nav_menu."&container=");
-	}
-}
-
-
-/*
- * AO: Breadcrumbs function to echo out crumbs in LI's (With #breadcrumbs containing UL).
- *
- */
-function get_breadcrumbs()
-{
+function oneltd_is_template( $name = false ) {
 	global $post;
-
-	$ancestors = get_post_ancestors( $post );
-	$ancestors = array_reverse($ancestors);
-	$ancestors[] = $post->ID;
-	echo '<ul id="breadcrumbs">';
 	
-	if( is_home() ):
-		echo '<li><a href="/blog">blog</a></li>';
-	else:
+	$template_file = get_post_meta($post->ID,'_wp_page_template',TRUE);
 	
-		foreach($ancestors as $crumb)
-		{
-			echo '<li><a href="';
-			echo get_permalink($crumb);
-			echo '">';
-			echo get_the_title($crumb);
-			echo '</a></li>';
-		}	
-	endif;
-	
-	echo '</ul>';
+	// check for a template type
+	if( $name ):
+		if ($template_file == $name ):
+			return true;
+		else:
+			return false;
+		endif;
+	else: 
+		return $template_file;
+	endif;	
 }
-
 
 /*
  * AO: Search form - simple search form which can be overwritten (include for it is commented by default.
@@ -202,77 +172,52 @@ function oneltd_search_form( $form ) {
 			</form>';
 	return $form;
 }
-//add_filter( 'get_search_form', 'oneltd_search_form' );
+add_filter( 'get_search_form', 'oneltd_search_form' );
 
+/**
+ * Register widgetized area and update sidebar with default widgets
+ *
+ * @since oneltd 1.0
+ */
+function oneltd_widgets_init() {
+	register_sidebar( array(
+		'name' => __( 'Sidebar', 'oneltd' ),
+		'id' => 'sidebar-1',
+		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+		'after_widget' => "</aside>",
+		'before_title' => '<h1 class="widget-title">',
+		'after_title' => '</h1>',
+	) );
+}
+add_action( 'widgets_init', 'oneltd_widgets_init' );
 
+/**
+ * Enqueue scripts and styles
+ */
+function oneltd_scripts() {
+	global $post;
 
-if ( ! function_exists( 'toolbox_comment' ) ) :
 	/**
-	 * AO: This funcktion is a direct port from the Toolbox theme, changes can be made as and when required during development.
-	 * 
-	 * Template for comments and pingbacks.
-	 *
-	 * To override this walker in a child theme without modifying the comments template
-	 * simply create your own toolbox_comment(), and that function will be used instead.
-	 *
-	 * Used as a callback by wp_list_comments() for displaying the comments.
-	 *
-	 * @since Toolbox 0.4
+	 * Better jQuery inclusion
 	 */
-	function toolbox_comment( $comment, $args, $depth ) {
-		$GLOBALS['comment'] = $comment;
-		switch ( $comment->comment_type ) :
-			case '' :
-		?>
-		<li <?php comment_class(); ?> id="li-comment-<?php comment_ID(); ?>">
-			<article id="comment-<?php comment_ID(); ?>" class="comment">
-				<footer>
-					<div class="comment-author vcard">
-						<?php echo get_avatar( $comment, 40 ); ?>
-						<?php printf( __( '%s <span class="says">says:</span>', 'toolbox' ), sprintf( '<cite class="fn">%s</cite>', get_comment_author_link() ) ); ?>
-					</div><!-- .comment-author .vcard -->
-					<?php if ( $comment->comment_approved == '0' ) : ?>
-						<em><?php _e( 'Your comment is awaiting moderation.', 'toolbox' ); ?></em>
-						<br />
-					<?php endif; ?>
-	
-					<div class="comment-meta commentmetadata">
-						<a href="<?php echo esc_url( get_comment_link( $comment->comment_ID ) ); ?>"><time pubdate datetime="<?php comment_time( 'c' ); ?>">
-						<?php
-							/* translators: 1: date, 2: time */
-							printf( __( '%1$s at %2$s', 'toolbox' ), get_comment_date(), get_comment_time() ); ?>
-						</time></a>
-						<?php edit_comment_link( __( '(Edit)', 'toolbox' ), ' ' );
-						?>
-					</div><!-- .comment-meta .commentmetadata -->
-				</footer>
-	
-				<div class="comment-content"><?php comment_text(); ?></div>
-	
-				<div class="reply">
-					<?php comment_reply_link( array_merge( $args, array( 'depth' => $depth, 'max_depth' => $args['max_depth'] ) ) ); ?>
-				</div><!-- .reply -->
-			</article><!-- #comment-## -->
-	
-		<?php
-				break;
-			case 'pingback' :
-			case 'trackback' :
-		?>
-		<li class="post pingback">
-			<p><?php _e( 'Pingback:', 'toolbox' ); ?> <?php comment_author_link(); ?><?php edit_comment_link( __( '(Edit)', 'toolbox' ), ' ' ); ?></p>
-		<?php
-				break;
-		endswitch;
+	if (!is_admin()) {
+		wp_deregister_script('jquery');
+		wp_register_script('jquery', ("http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"), false);
+		wp_enqueue_script('jquery');
 	}
-endif; // ends check for toolbox_comment()
-
-
-
-
-
-
-
-
+	
+	// enqueue the core.js file in the footer (all other scripts should go in the head...)
+	wp_enqueue_script( 'core', get_template_directory_uri() . '/javascript/core.js', 'jquery', '1', true );
+	
+	
+	// Can query for different types of pages/templates (using oneltd_is_template('TEMPLATE_NAME'); ) and include scripts when needed...
+	// Especially handy for scrolling banners on the homepage etc
+	/*
+	if ( is_front_page() ) {
+		// enqueue jCarousel or similar!
+	}
+	*/	
+}
+add_action( 'wp_enqueue_scripts', 'oneltd_scripts' );
 
 ?>
