@@ -86,7 +86,7 @@ if ( ! function_exists( 'oneltd_setup' ) ):
 		/** WP in the back-end **/
 		
 		/**
-		 * Remove any unwanted menu's from the wordpress sidebar
+		 * Remove any unwanted menus from the wordpress sidebar
 		 */
 		function remove_menus () 
 		{  
