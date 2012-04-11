@@ -206,8 +206,17 @@ function oneltd_scripts() {
 		wp_enqueue_script('jquery');
 	}
 	
-	// enqueue the core.js file in the footer (all other scripts should go in the head...)
-	wp_enqueue_script( 'core', get_template_directory_uri() . '/javascript/core.js', 'jquery', '1', true );
+	
+	// work out if there is a codekit concatenated/minified version. If so, include that, otherwise, include core.js. If no javascript, don't include anything!
+	$javascript_file = (file_exists(get_stylesheet_directory() . '/javascript/core-ck.js')) ? 'core-ck.js'
+				: ((file_exists(get_stylesheet_directory() . '/javascript/core.js')) ? 'core.js' : false);
+
+	if ($javascript_file)
+	{
+		// get modified time for smart caching
+		$modified_time = filemtime(get_stylesheet_directory()."/javascript/$javascript_file");
+		wp_enqueue_script( 'core', get_template_directory_uri() . "/javascript/$javascript_file?" . $modified_time, 'jquery', '1', true );
+	}
 	
 	
 	// Can query for different types of pages/templates (using oneltd_is_template('TEMPLATE_NAME'); ) and include scripts when needed...
