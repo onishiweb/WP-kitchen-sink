@@ -49,7 +49,7 @@
 		
 		<!-- Main stylesheets & fonts etc -->
 		<!--[if ! lte IE 6]><!-->
-			<link rel="stylesheet" type="text/css" media="all" href="<?php bloginfo( 'stylesheet_url' ); ?>" />			
+			<link rel="stylesheet" type="text/css" media="all" href="<?php bloginfo( 'stylesheet_url' ); echo '?'.filemtime( get_stylesheet_directory().'/style.css'); ?>" />			
 		<!--<![endif]-->
 	
 		<!-- Standard IE6 Stylesheet courtesy of Andy Clarke -->
