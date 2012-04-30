@@ -84,6 +84,11 @@ if ( ! function_exists( 'oneltd_setup' ) ):
 	
 		
 		/** WP in the back-end **/
+
+		/**
+		 * Disable the Admin bar (courtesy of Paul Davis - Slim Starkers)
+		 */
+	    add_filter('show_admin_bar', '__return_false');
 		
 		/**
 		 * Remove any unwanted menus from the wordpress sidebar
@@ -127,7 +132,24 @@ if ( ! function_exists( 'oneltd_setup' ) ):
 			add_filter('pre_option_update_core', create_function('$a', "return null;"));
 		}
 		
-		// AO: Add in the function to stop users from using the Rich text editor in posts/pages.... (and comment it out...)
+		/**
+		 * Prevent users from being able to use the full content editor in WP, allow only the code view
+		 * - handy when you need to add in custom html to the post (which actually shouldn't be done)
+		add_filter ( 'user_can_richedit' , create_function ( '$a' , 'return false;' ) , 50 );
+		*/
+
+		/** Add featured image to feeds
+	     * http://app.kodery.com/s/1314 (courtesy of Paul Davis)
+	    */
+	    function insertThumbnailRSS($content) {
+	        global $post;
+	        if ( has_post_thumbnail( $post->ID ) ){
+	            $content = '' . get_the_post_thumbnail( $post->ID, 'thumbnail', array( 'alt' => get_the_title(), 'title' => get_the_title(), 'style' => 'float:right;' ) ) . '' . $content;
+	        }
+	        return $content;
+	    }
+	    add_filter('the_excerpt_rss', 'insertThumbnailRSS');
+	    add_filter('the_content_feed', 'insertThumbnailRSS');
 		
 	}
 
