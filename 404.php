@@ -17,8 +17,6 @@ get_header(); ?>
 					<p><?php _e( 'It looks like nothing was found at this location. Maybe try one of the links below or a search?', 'oneltd' ); ?></p>
 
 					<?php get_search_form(); ?>
-
-					
 				</div><!-- .entry-content -->
 
 			</article><!-- #post-0 -->
