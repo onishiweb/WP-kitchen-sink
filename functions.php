@@ -21,7 +21,7 @@ if ( ! function_exists( 'oneltd_setup' ) ):
 		 * Custom template tags for this theme.
 		 */
 		require( get_template_directory() . '/inc/template-tags.php' );
-	
+
 		/**
 		 * Custom Theme Options (to appear in wordpress backend if needed)
 		 */
@@ -41,7 +41,7 @@ if ( ! function_exists( 'oneltd_setup' ) ):
 		register_nav_menus( array(
 			'primary' => __( 'Main Navigation', 'oneltd' ),
 		) );
-		
+
 		/**
 		 * Include category IDs in body_class and post_class
 		 */
@@ -51,13 +51,24 @@ if ( ! function_exists( 'oneltd_setup' ) ):
 				$classes [] = 'cat-' . $category->cat_ID . '-id';
 				return $classes;
 		}
+
+		/**
+		 * NOTE: Relies on the Cookie Control plugin <http://www.civicuk.com/cookie-law/index>
+		 */
+		function cookies_enabled_class($classes)
+		{
+			$classes[] = oneltd_cookies_enabled() ? 'cookies-enabled' : 'awaiting-cookie-consent';
+			return $classes;
+		}
+
 		add_filter('post_class', 'category_id_class');
 		add_filter('body_class', 'category_id_class');
-	
-	
+		add_filter('body_class', 'cookies_enabled_class');
+
+
 		/**
 		 * New excerpt length and custom after excerpt!
-		
+
 		function new_excerpt_length($length) {
 			return 60;
 		}
@@ -68,7 +79,7 @@ if ( ! function_exists( 'oneltd_setup' ) ):
 		}
 		add_filter( 'excerpt_more', 'custom_excerpt_more' );
 		 */
-			
+
 		/**
 		 * Remove the crap from the wp_head() function
 		 */
@@ -81,49 +92,49 @@ if ( ! function_exists( 'oneltd_setup' ) ):
 		remove_action('wp_head', 'start_post_rel_link', 10, 0);
 		remove_action('wp_head', 'parent_post_rel_link', 10, 0);
 		remove_action('wp_head', 'adjacent_posts_rel_link', 10, 0);
-	
-		
+
+
 		/** WP in the back-end **/
 
 		/**
 		 * Disable the Admin bar (courtesy of Paul Davis - Slim Starkers)
 		 */
 	    add_filter('show_admin_bar', '__return_false');
-		
+
 		/**
 		 * Remove any unwanted menus from the wordpress sidebar
 		 */
-		function remove_menus () 
-		{  
-			global $menu;  
+		function remove_menus ()
+		{
+			global $menu;
 			// remove the Links and Comments menu items as default
-			$restricted = array( __('Links'), __('Comments') );  
-			end ($menu);  
+			$restricted = array( __('Links'), __('Comments') );
+			end ($menu);
 			while (prev($menu))
-			{  
-				$value = explode(' ',$menu[key($menu)][0]);  
-				if(in_array($value[0] != NULL?$value[0]:"" , $restricted)){unset($menu[key($menu)]);}  
-			}  
-		}  
-		add_action('admin_menu', 'remove_menus');  
-		
+			{
+				$value = explode(' ',$menu[key($menu)][0]);
+				if(in_array($value[0] != NULL?$value[0]:"" , $restricted)){unset($menu[key($menu)]);}
+			}
+		}
+		add_action('admin_menu', 'remove_menus');
+
 		/**
 		 * Remove any unwanted wordpress dashboard boxes
 		 */
-		function disable_default_dashboard_widgets() {  
-		  
-			// remove_meta_box('dashboard_right_now', 'dashboard', 'core');  
-			remove_meta_box('dashboard_recent_comments', 'dashboard', 'core');  
-			remove_meta_box('dashboard_incoming_links', 'dashboard', 'core');  
+		function disable_default_dashboard_widgets() {
+
+			// remove_meta_box('dashboard_right_now', 'dashboard', 'core');
+			remove_meta_box('dashboard_recent_comments', 'dashboard', 'core');
+			remove_meta_box('dashboard_incoming_links', 'dashboard', 'core');
 			remove_meta_box('dashboard_plugins', 'dashboard', 'core');
 			// AO: This one could be useful though...
-			// remove_meta_box('dashboard_quick_press', 'dashboard', 'core'); 
-			// remove_meta_box('dashboard_recent_drafts', 'dashboard', 'core');  
-			// remove_meta_box('dashboard_primary', 'dashboard', 'core');  
-			// remove_meta_box('dashboard_secondary', 'dashboard', 'core');  
-		}  
+			// remove_meta_box('dashboard_quick_press', 'dashboard', 'core');
+			// remove_meta_box('dashboard_recent_drafts', 'dashboard', 'core');
+			// remove_meta_box('dashboard_primary', 'dashboard', 'core');
+			// remove_meta_box('dashboard_secondary', 'dashboard', 'core');
+		}
 		add_action('admin_menu', 'disable_default_dashboard_widgets');
-		
+
 		/**
 		 * Hide the upgrade notices in Wordpress (especially handy for people like Career Innovation etc etc
 		 */
@@ -131,7 +142,7 @@ if ( ! function_exists( 'oneltd_setup' ) ):
 			add_action('init', create_function('$a', "remove_action('init', 'wp_version_check');"), 2);
 			add_filter('pre_option_update_core', create_function('$a', "return null;"));
 		}
-		
+
 		/**
 		 * Prevent users from being able to use the full content editor in WP, allow only the code view
 		 * - handy when you need to add in custom html to the post (which actually shouldn't be done)
@@ -150,7 +161,7 @@ if ( ! function_exists( 'oneltd_setup' ) ):
 	    }
 	    add_filter('the_excerpt_rss', 'insertThumbnailRSS');
 	    add_filter('the_content_feed', 'insertThumbnailRSS');
-		
+
 	}
 
 endif; // oneltd_setup
@@ -159,6 +170,14 @@ endif; // oneltd_setup
  */
 add_action( 'after_setup_theme', 'oneltd_setup' );
 
+/**
+ * CM: Are cookies enabled? (i.e. has the user accepted the use of cookies on the site - STOOPID EU LAW)
+ * NOTE: Relies on the Cookie Control plugin <http://www.civicuk.com/cookie-law/index>
+ */
+function oneltd_cookies_enabled ()
+{
+	return isset ($_COOKIE['civicAllowCookies']);
+}
 
 /*
  * AO: Is template - check whether the current page is using a certain template or retreive the template name
@@ -166,9 +185,9 @@ add_action( 'after_setup_theme', 'oneltd_setup' );
  */
 function oneltd_is_template( $name = false ) {
 	global $post;
-	
+
 	$template_file = get_post_meta($post->ID,'_wp_page_template',TRUE);
-	
+
 	// check for a template type
 	if( $name ):
 		if ($template_file == $name ):
@@ -176,9 +195,9 @@ function oneltd_is_template( $name = false ) {
 		else:
 			return false;
 		endif;
-	else: 
+	else:
 		return $template_file;
-	endif;	
+	endif;
 }
 
 /*
@@ -227,8 +246,8 @@ function oneltd_scripts() {
 		wp_register_script('jquery', ("http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"), false);
 		wp_enqueue_script('jquery');
 	}
-	
-	
+
+
 	// work out if there is a codekit concatenated/minified version. If so, include that, otherwise, include core.js. If no javascript, don't include anything!
 	$javascript_file = (file_exists(get_stylesheet_directory() . '/javascript/core-ck.js')) ? 'core-ck.js'
 				: ((file_exists(get_stylesheet_directory() . '/javascript/core.js')) ? 'core.js' : false);
@@ -239,15 +258,15 @@ function oneltd_scripts() {
 		$modified_time = filemtime(get_stylesheet_directory()."/javascript/$javascript_file");
 		wp_enqueue_script( 'core', get_template_directory_uri() . "/javascript/$javascript_file?" . $modified_time, 'jquery', '1', true );
 	}
-	
-	
+
+
 	// Can query for different types of pages/templates (using oneltd_is_template('TEMPLATE_NAME'); ) and include scripts when needed...
 	// Especially handy for scrolling banners on the homepage etc
 	/*
 	if ( is_front_page() ) {
 		// enqueue jCarousel or similar!
 	}
-	*/	
+	*/
 }
 add_action( 'wp_enqueue_scripts', 'oneltd_scripts' );
 
