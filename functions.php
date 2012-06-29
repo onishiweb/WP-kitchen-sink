@@ -52,18 +52,8 @@ if ( ! function_exists( 'oneltd_setup' ) ):
 				return $classes;
 		}
 
-		/**
-		 * NOTE: Relies on the Cookie Control plugin <http://www.civicuk.com/cookie-law/index>
-		 */
-		function cookies_enabled_class($classes)
-		{
-			$classes[] = oneltd_cookies_enabled() ? 'cookies-enabled' : 'awaiting-cookie-consent';
-			return $classes;
-		}
-
 		add_filter('post_class', 'category_id_class');
 		add_filter('body_class', 'category_id_class');
-		add_filter('body_class', 'cookies_enabled_class');
 
 
 		/**
@@ -170,15 +160,6 @@ endif; // oneltd_setup
  */
 add_action( 'after_setup_theme', 'oneltd_setup' );
 
-/**
- * CM: Are cookies enabled? (i.e. has the user accepted the use of cookies on the site - STOOPID EU LAW)
- * NOTE: Relies on the Cookie Control plugin <http://www.civicuk.com/cookie-law/index>
- */
-function oneltd_cookies_enabled ()
-{
-	return isset ($_COOKIE['civicAllowCookies']);
-}
-
 /*
  * AO: Is template - check whether the current page is using a certain template or retreive the template name
  *
@@ -209,7 +190,7 @@ function oneltd_search_form( $form ) {
     $form = '<form role="search" method="get" action="/">
 				<label for="search">Search</label>
 				<input type="text" id="search" name="s" />
-				<input type="submit" id="search-sub" value="" />
+				<input type="submit" id="search-sub" value="Search" />
 			</form>';
 	return $form;
 }
