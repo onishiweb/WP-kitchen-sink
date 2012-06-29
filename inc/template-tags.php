@@ -24,10 +24,6 @@ if ( ! function_exists( 'oneltd_get_subnav' ) ):
 			
 			echo "<ul>";
 			wp_list_pages('title_li=&link_before=<span></span>&child_of='.$top->ID);
-			if( $top->ID == 4116 ):
-			?><li><a href="/contact-us"><span></span>Contact us</a></li>
-			<?php
-			endif;
 			echo "</ul>";
 		}
 		else
@@ -53,6 +49,7 @@ if ( ! function_exists( 'oneltd_get_breadcrumbs' ) ):
 		$ancestors[] = $post->ID;
 		echo '<ul id="breadcrumbs">';
 		
+		// If on the "homepage" (posts listing page) display blog as the top page - easily changed to news etc!
 		if( is_home() ):
 			echo '<li><a href="/blog">blog</a></li>';
 		else:
