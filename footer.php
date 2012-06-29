@@ -12,6 +12,7 @@
 			</div> <!-- /#content -->
 		
 			<footer id="site-footer">
+				<p><?php echo simple_copyright(); ?></p>
 			</footer>
 	
 		</div> <!-- /#container -->

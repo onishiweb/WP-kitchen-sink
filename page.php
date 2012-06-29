@@ -25,5 +25,5 @@ get_header(); ?>
 				<p><?php _e( 'Error message: no posts found...', 'oneltd' ); ?></p>
 			<?php endif; ?>
 			
-	<?php get_sidebar(); ?>			
+	<?php get_sidebar(); ?>		
 <?php get_footer(); ?>

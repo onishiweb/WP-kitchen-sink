@@ -220,3 +220,12 @@ function oneltd_category_transient_flusher() {
 }
 add_action( 'edit_category', 'oneltd_category_transient_flusher' );
 add_action( 'save_post', 'oneltd_category_transient_flusher' );
+
+/**
+ * A very simple copyright text generator in the format (c) name year
+ *
+ * @since oneltd 2.0
+ */
+function simple_copyright () {
+	return "&copy; " . get_bloginfo('name') ." ". date("Y");
+}
