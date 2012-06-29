@@ -10,6 +10,7 @@ This is a template theme for Wordpress development at One Ltd. The theme should 
 *	oneltd_comment - Custom function to generate comments
 *	oneltd_posted_on - Prints HTML with meta information for the current post-date/time and author
 *	oneltd_categorized_blog - 
+*	simple_copyright - returns a simple peice of copyright text (c) name year
 
 
 ## To Do: 
